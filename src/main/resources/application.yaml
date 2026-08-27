@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: mutilboard
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:p6spy:h2:tcp://localhost/~/multiboard
+    username: sa
+    password:
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true          # SQL 줄바꿈
+        highlight_sql: true       # SQL 키워드 ANSI 색상
+        use_sql_comments: true    # 쿼리 위 주석으로 JPQL 내용 출력
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
