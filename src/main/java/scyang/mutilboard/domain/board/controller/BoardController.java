@@ -16,6 +16,7 @@ import scyang.mutilboard.domain.board.dto.BoardSearchCondition;
 import scyang.mutilboard.domain.board.repository.BoardRepository;
 import scyang.mutilboard.domain.board.service.BoardService;
 import scyang.mutilboard.global.common.ApiResponse;
+import scyang.mutilboard.global.common.MessageUtil;
 import scyang.mutilboard.global.common.PageResponse;
 
 @RestController
@@ -32,7 +33,7 @@ public class BoardController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(boardId));
+                .body(ApiResponse.success(boardId, MessageUtil.getMessage("board.create.success")));
     }
 
     @PutMapping("/{boardId}")

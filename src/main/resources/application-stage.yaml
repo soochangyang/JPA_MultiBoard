@@ -2,12 +2,7 @@ spring:
   application:
     name: mutilboard
   profiles:
-    active: dev
-
-  messages:
-    basename: msg/messages
-    encoding: UTF-8
-    cache-duration: PT1H # 1hour
+    active: local
   datasource:
     url: jdbc:p6spy:h2:tcp://localhost/~/multiboard
     username: sa
@@ -16,7 +11,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
