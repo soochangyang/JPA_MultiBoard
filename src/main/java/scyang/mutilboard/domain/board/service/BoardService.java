@@ -10,6 +10,7 @@ import scyang.mutilboard.domain.board.dto.BoardResponse;
 import scyang.mutilboard.domain.board.dto.BoardSearchCondition;
 import scyang.mutilboard.domain.board.entity.Board;
 import scyang.mutilboard.domain.board.repository.BoardRepository;
+import scyang.mutilboard.global.common.MessageUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,9 @@ public class BoardService {
 
     public BoardResponse getBoard(Long boardId) {
         Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("not found board"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException(MessageUtil.getMessage("board.notfound"))
+                );
 
         return new BoardResponse(
                 findBoard.getId(),
