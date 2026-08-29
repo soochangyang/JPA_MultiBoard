@@ -50,10 +50,10 @@ class BoardControllerTest {
         mockMvc.perform(post("/api/boards") // POST /api/boards 주소로 요청
                         .contentType(MediaType.APPLICATION_JSON) // "나 JSON 보낸다!"
                         .content(jsonRequest)) // JSON 데이터 본문 실어 보내기
-                .andExpect(status().isCreated()) // 🌟 검증 1: HTTP 상태 코드가 201(OK)인가?
-                .andExpect((ResultMatcher) jsonPath("$.success").value(true)) // 🌟 검증 2: 공통 응답 ApiResponse의 success가 true인가?
-                .andExpect((ResultMatcher) jsonPath("$.data").value(1)) // 🌟 검증 3: 반환된 ID 데이터가 1인가?
-                .andDo(print()); // 🌟 보너스: 테스트 실행 동안 주고받은 HTTP 콘솔 로그 출력하기
+                .andExpect(status().isCreated()) //  검증 1: HTTP 상태 코드가 201(OK)인가?
+                .andExpect((ResultMatcher) jsonPath("$.success").value(true)) //공통 응답 ApiResponse의 success가 true인가?
+                .andExpect((ResultMatcher) jsonPath("$.data").value(1)) //반환된 ID 데이터가 1인가?
+                .andDo(print()); //HTTP 콘솔 로그
     }
 
 

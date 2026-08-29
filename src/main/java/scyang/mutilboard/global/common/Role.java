@@ -1,5 +1,6 @@
 package scyang.mutilboard.global.common;
 
 public enum Role {
-    ADMIN, USER
+    ROLE_USER,
+    ROLE_ADMIN
 }
