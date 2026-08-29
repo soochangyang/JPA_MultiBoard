@@ -1,15 +1,23 @@
 package scyang.mutilboard.global.jwt;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -33,5 +41,47 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public Authentication getAuthentication(String token){
+        //Decrypt token
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        //Get role informatin from claims
+        String role = claims.get("role", String.class);
+
+        //Convert to GrantedAuthority object for Spring Security
+        //"ROLE_" prefix is usually required for Spring Security to recognize it properly.
+        Collection<? extends GrantedAuthority> authorities =
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+
+        //Create Principal to be stored in SecurityContext
+        User principal = new User(claims.getSubject(), "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public boolean validateToken(String token) {
+        try{
+            // token phasing
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch(io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
+            log.info("Invalid JWT signature");
+        } catch(ExpiredJwtException e){
+            log.info("Expired JWT token");
+        } catch(UnsupportedJwtException e){
+            log.info("Unsupported JWT token");
+        } catch(IllegalArgumentException e){
+            log.info("JWT token is invalid.");
+        }
+        return false;
     }
 }

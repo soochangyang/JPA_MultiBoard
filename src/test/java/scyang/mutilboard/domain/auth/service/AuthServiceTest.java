@@ -136,7 +136,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void resetPassword() {
+    void resetPassword_success() {
         AuthRequest.ResetPassword request = new AuthRequest.ResetPassword(email1, pwd);
 
         Member mockMember = Member.builder()
@@ -153,8 +153,6 @@ class AuthServiceTest {
         //then
         assertThat(mockMember.getPassword()).isNotEqualTo(pwd);
         assertThat(passwordEncoder.matches(request.getNewPassword(), mockMember.getPassword())).isTrue();
-
-
     }
 
     private void setId(Object target, Long id) {
