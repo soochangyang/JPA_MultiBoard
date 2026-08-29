@@ -18,5 +18,5 @@ A test-driven mini project for a multi-board API built using Spring Boot and JPA
 ## 📈 Changelog & Project Guide
 
 ### 📅 [2026-08-28] - feature/env-setup
-- [ ] Profile Separation (`dev`, `stage`, `real`)
-- [ ] Internationalization (`i18n`) Message File Setup
+- [x] Profile Separation (`dev`, `stage`, `real`)
+- [x] Internationalization (`i18n`) Message File Setup
