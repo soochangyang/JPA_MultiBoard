@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    # 파일 기반 H2 DB (사용자 홈 디렉토리에 multiboard_dev.mv.db 파일 생성)
+    url: jdbc:p6spy:h2:file:~/multiboard_dev;MODE=MySQL;AUTO_SERVER=TRUE
+    username: sa
+    password:
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update # 기존 데이터 유지, 스키마 변경 시 업데이트
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
