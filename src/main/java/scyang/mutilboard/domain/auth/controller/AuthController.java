@@ -11,6 +11,8 @@ import scyang.mutilboard.domain.auth.dto.AuthRequest;
 import scyang.mutilboard.global.common.ApiResponse;
 import scyang.mutilboard.global.common.MessageUtil;
 
+import static scyang.mutilboard.global.common.MessageUtil.*;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -19,38 +21,29 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<Long>> signUp(@RequestBody @Valid AuthRequest.SignUp request){
+    public ApiResponse<Long> signUp(@RequestBody @Valid AuthRequest.SignUp request){
         Long memberId = authService.signUp(request);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse
-                        .success(memberId, MessageUtil.getMessage("signup.success")));
+        return ApiResponse.created(memberId, getMessage("signup.success"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody @Valid AuthRequest.Login request){
+    public ApiResponse<String> login(@RequestBody @Valid AuthRequest.Login request){
         String token = authService.login(request);
-        return ResponseEntity
-                .ok(ApiResponse
-                        .success(token, MessageUtil.getMessage("login.success")));
+        return ApiResponse.success(token, getMessage("login.success"));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(){
+    public ApiResponse<Void> logout(){
         /**
          * ToDo Redis blackList add
          */
-        return ResponseEntity
-                .ok(ApiResponse
-                        .success(null, MessageUtil.getMessage("logout.success")));
+        return ApiResponse.success(null, getMessage("logout.success"));
     }
 
     @PutMapping("/password")
-    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody @Valid AuthRequest.ResetPassword request){
+    public ApiResponse<Void> resetPassword(@RequestBody @Valid AuthRequest.ResetPassword request){
         authService.resetPassword(request);
-        return ResponseEntity
-                .ok(ApiResponse
-                        .success(null, MessageUtil.getMessage("password.reset.success")));
+        return ApiResponse.success(null, getMessage("password.reset.success"));
     }
 
 }

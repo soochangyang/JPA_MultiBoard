@@ -3,27 +3,40 @@ package scyang.mutilboard.global.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-@Getter
-@AllArgsConstructor
-public class ApiResponse<T> {
+import static scyang.mutilboard.global.common.MessageUtil.*;
 
-    private boolean success;
-    private T data;
-    private String message;
 
-    public static <T> ApiResponse<T> success(T data){
-        return new ApiResponse<>(true, data, "success");
-    }
-    public static <T> ApiResponse<T> success(T data, String message){
-        return new ApiResponse<>(true, data, message);
-    }
+public class ApiResponse<T> extends ResponseEntity<ApiResponse.Payload<T>> {
 
-    public static <Void> ApiResponse<Void> success(){
-        return new ApiResponse<>(true, null, "success");
+    @Getter
+    @AllArgsConstructor
+    public static class Payload<T>{
+        private boolean success;
+        private T data;
+        private String message;
     }
 
-    public static <T> ApiResponse<T> error(String message){
-        return new ApiResponse<>(false, null, message);
+
+    protected ApiResponse(Payload<T> body, HttpStatus status) {
+        super(body, status);
+    }
+
+    //200
+    public static <T> ApiResponse<T> success(T data, String message) {
+        return new ApiResponse<>(new Payload(true, data, message), HttpStatus.OK);
+    }
+
+
+    //201
+    public static <T> ApiResponse <T> created(T data, String message) {
+        return new ApiResponse<>(new Payload(true, data, message), HttpStatus.CREATED);
+    }
+
+    //error
+    public static ApiResponse error(String message) {
+        return new ApiResponse<>(new Payload(false, null, getMessage("error.internal")), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

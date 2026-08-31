@@ -16,6 +16,7 @@ public class MessageUtil {
 
     @Autowired
     private void setMessageSource(MessageSource messageSource){
+        // messageSource Inject
         MessageUtil.messageSource = messageSource;
     }
 

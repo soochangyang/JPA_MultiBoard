@@ -13,7 +13,7 @@ public class BoardRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Create{
-        @NotBlank(message = "board name is required")
+        @NotBlank(message = "required.boardname")
         private String name;
 
         private String description;
