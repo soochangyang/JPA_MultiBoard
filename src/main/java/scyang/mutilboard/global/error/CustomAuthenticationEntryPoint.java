@@ -38,11 +38,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         // 4 Create ApiResponse object
         //
-        ApiResponse<Object> errorResponse = ApiResponse.error(errorMessage);
+        ApiResponse errorResponse = ApiResponse.error(errorMessage, HttpStatus.UNAUTHORIZED);
 
 
         // 5 Convert to JSON  and write to response
-        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse.getBody());
         response.getWriter().write(jsonResponse);
     }
 }

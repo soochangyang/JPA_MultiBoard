@@ -1,18 +1,18 @@
 package scyang.mutilboard.domain.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import scyang.mutilboard.domain.auth.service.AuthService;
 import scyang.mutilboard.domain.auth.dto.AuthRequest;
+import scyang.mutilboard.domain.auth.service.AuthService;
 import scyang.mutilboard.global.common.ApiResponse;
-import scyang.mutilboard.global.common.MessageUtil;
 
-import static scyang.mutilboard.global.common.MessageUtil.*;
+import static scyang.mutilboard.global.common.MessageUtil.getMessage;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -33,10 +33,14 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(){
-        /**
-         * ToDo Redis blackList add
-         */
+    public ApiResponse<Void> logout(HttpServletRequest request){
+        String bearerToken = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            String accessToken = bearerToken.substring(7);
+            authService.logout(accessToken);
+        }
+
         return ApiResponse.success(null, getMessage("logout.success"));
     }
 
