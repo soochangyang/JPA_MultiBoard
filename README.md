@@ -19,7 +19,7 @@ A test-driven mini project for a multi-board API built using Spring Boot and JPA
 
 ## 📈 Changelog & Project Guide
 
-📅 [2026-09-02] - feature/jwt-refresh-token-and-auth-flow
+### 📅 [2026-09-02] - feature/jwt-refresh-token-and-auth-flow
 - Implement two-track JWT authentication using Redis (Access Token blacklist & Refresh Token whitelist)
 - Add /api/auth/reissue endpoint in AuthController for Access Token renewal using Refresh Token
 - Update AuthService logout logic to securely delete the user's Refresh Token from Redis to prevent token hijacking
