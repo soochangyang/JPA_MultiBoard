@@ -1,6 +1,7 @@
 package scyang.mutilboard.domain.auth.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.Token;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,13 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import scyang.mutilboard.domain.auth.dto.AuthRequest;
+import scyang.mutilboard.domain.auth.dto.TokenResponse;
 import scyang.mutilboard.domain.member.entity.Member;
 import scyang.mutilboard.domain.member.repository.MemberRepository;
 import scyang.mutilboard.global.common.MessageUtil;
@@ -31,8 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 
 @Slf4j
@@ -42,6 +45,8 @@ class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
+    @Mock
+    private StringRedisTemplate stringRedisTemplate;
 
     @Mock
     private MemberRepository memberRepository;
@@ -51,6 +56,9 @@ class AuthServiceTest {
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private ValueOperations<String, String> valueOperations;
 
     private String email1 = "king@world.com";
     private String pwd = "123!@#";
@@ -126,13 +134,16 @@ class AuthServiceTest {
                 .build();
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(mockMember));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
-        given(jwtTokenProvider.createToken(anyString(), anyString())).willReturn("mySecretToken");
+        given(jwtTokenProvider.createToken(anyString(), anyString())).willReturn("myAccessToken");
+        given(jwtTokenProvider.createRefreshToken(anyString())).willReturn("myRefreshToken");
 
+        when(stringRedisTemplate.opsForValue()).thenReturn(valueOperations);
         //when
-        String token = authService.login(request);
+        TokenResponse tokenResponse = authService.login(request);
 
         //then
-        assertThat(token).isEqualTo("mySecretToken");
+        assertThat(tokenResponse.getAccessToken()).isEqualTo("myAccessToken");
+        assertThat(tokenResponse.getRefreshToken()).isEqualTo("myRefreshToken");
     }
 
     @Test

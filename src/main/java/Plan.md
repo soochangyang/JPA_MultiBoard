@@ -12,6 +12,6 @@ scyang.mutilboard
 │    └── controller (MemberController)
 │
 └── auth     (의존성 방향: member를 참조함 ➔)
-├── dto        (AuthRequest.SignUp, Login 등)
-├── service    (AuthService - 가입, 로그인, 비번재발급)
-└── controller (AuthController)
+     ├── dto        (AuthRequest.SignUp, Login 등)
+     ├── service    (AuthService - 가입, 로그인, 비번재발급)
+     └── controller (AuthController)

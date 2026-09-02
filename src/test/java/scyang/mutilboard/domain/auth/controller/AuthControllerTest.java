@@ -10,20 +10,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import scyang.mutilboard.domain.auth.dto.AuthRequest;
+import scyang.mutilboard.domain.auth.dto.TokenResponse;
 import scyang.mutilboard.domain.auth.service.AuthService;
 import scyang.mutilboard.domain.member.entity.Member;
 import scyang.mutilboard.domain.member.repository.MemberRepository;
 import scyang.mutilboard.global.common.MessageUtil;
 import tools.jackson.databind.ObjectMapper;
 
+
 import java.lang.reflect.Field;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -79,8 +77,12 @@ class AuthControllerTest {
     void login_success() throws Exception {
         //given
         AuthRequest.Login request = new AuthRequest.Login("my@Company.com", "12345");
-        String mockToken = UUID.randomUUID().toString();
-        given(authService.login(any(AuthRequest.Login.class))).willReturn(mockToken);
+
+        String accessToken = UUID.randomUUID().toString();
+        String refreshToken = UUID.randomUUID().toString();
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
+
+        given(authService.login(any(AuthRequest.Login.class))).willReturn(tokenResponse);
 
         //when & then
         mockMvc.perform(post("/api/auth/login")
@@ -88,7 +90,8 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(mockToken))
+                .andExpect(jsonPath("$.data.accessToken").value(accessToken))
+                .andExpect(jsonPath("$.data.refreshToken").value(refreshToken))
                 .andDo(print());
     }
 

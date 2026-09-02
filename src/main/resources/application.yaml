@@ -3,6 +3,9 @@ spring:
     name: mutilboard
   profiles:
     active: dev # 기본으로 dev 프로필 실행
+  redis:
+    host: localhost
+    port: 6379
 
   messages:
     basename: msg/messages
@@ -24,4 +27,8 @@ logging:
 
 jwt:
   secret: NoOneCanKnowThisSuperSecretKeyForMultiBoardProjectForeverNeverShare
-  expiration-time: 86400000
+  expiration-time: 120000 #86400000
+  #5sec : 5* 1000
+  #1Min : 60 * 1000
+  #1Hour : 60 * 1000
+  #30Min : 30 * 60 * 1000 = 1800000

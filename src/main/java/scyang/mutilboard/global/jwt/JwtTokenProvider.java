@@ -4,12 +4,14 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -23,11 +25,14 @@ public class JwtTokenProvider {
 
     private final Key key;
     private final long expirationTime;
+    private final StringRedisTemplate redisTemplate;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
-                            @Value("${jwt.expiration-time}") long expirationTime){
+                            @Value("${jwt.expiration-time}") long expirationTime,
+                            StringRedisTemplate redisTemplate) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.expirationTime = expirationTime;
+        this.redisTemplate = redisTemplate;
     }
 
     public String createToken(String email, String role){
@@ -72,6 +77,12 @@ public class JwtTokenProvider {
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
+            // redis check
+            String isLogout = redisTemplate.opsForValue().get(token);
+            if( !ObjectUtils.isEmpty(isLogout)){
+                log.info("Logout token has been received");
+                return false;
+            }
             return true;
         } catch(io.jsonwebtoken.security.SecurityException | MalformedJwtException e){
             log.info("Invalid JWT signature");
@@ -83,5 +94,44 @@ public class JwtTokenProvider {
             log.info("JWT token is invalid.");
         }
         return false;
+    }
+
+    //Configurate Redis TTL
+    public Long getExpiration(String token){
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+
+        long now = new Date().getTime();
+        return expiration.getTime() - now;
+    }
+
+    //Refresh Token (lifeCycle 7days)
+    public String createRefreshToken(String email){
+        Date now = new Date();
+        //7Days = 7 * 24 * 60 * 60 * 1000
+        long refreshExpirationTime = 604800000L;
+        Date validity = new Date(now.getTime() + refreshExpirationTime);
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+
+    //get Subject(email)
+    public String getEmailFromToken(String token){
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 }

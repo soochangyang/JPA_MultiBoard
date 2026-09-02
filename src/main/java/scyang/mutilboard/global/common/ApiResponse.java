@@ -36,7 +36,7 @@ public class ApiResponse<T> extends ResponseEntity<ApiResponse.Payload<T>> {
     }
 
     //error
-    public static ApiResponse error(String message) {
-        return new ApiResponse<>(new Payload(false, null, getMessage("error.internal")), HttpStatus.INTERNAL_SERVER_ERROR);
+    public static ApiResponse error(String message, HttpStatus status) {
+        return new ApiResponse<>(new Payload(false, null, message), status);
     }
 }
