@@ -50,7 +50,7 @@ public class SecurityConfig {
                                         "/api/comment/**",
                                         "/api/member/**",
                                         "/api/post/**"
-                                ).authenticated()
+                                ) .authenticated()
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

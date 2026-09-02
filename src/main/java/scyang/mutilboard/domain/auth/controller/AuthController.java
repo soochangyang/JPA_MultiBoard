@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import scyang.mutilboard.domain.auth.dto.AuthRequest;
+import scyang.mutilboard.domain.auth.dto.TokenResponse;
 import scyang.mutilboard.domain.auth.service.AuthService;
 import scyang.mutilboard.global.common.ApiResponse;
 
@@ -27,9 +28,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<String> login(@RequestBody @Valid AuthRequest.Login request){
-        String token = authService.login(request);
-        return ApiResponse.success(token, getMessage("login.success"));
+    public ApiResponse<TokenResponse> login(@RequestBody @Valid AuthRequest.Login request){
+        TokenResponse tokenResponse = authService.login(request);
+        return ApiResponse.success(tokenResponse, getMessage("login.success"));
     }
 
     @PostMapping("/logout")
@@ -48,6 +49,19 @@ public class AuthController {
     public ApiResponse<Void> resetPassword(@RequestBody @Valid AuthRequest.ResetPassword request){
         authService.resetPassword(request);
         return ApiResponse.success(null, getMessage("password.reset.success"));
+    }
+
+    @PostMapping("/reissue")
+    public ApiResponse<TokenResponse> reissue(HttpServletRequest request){
+        String refreshToken = request.getHeader("Authorization-Refresh");
+
+        if (!StringUtils.hasText(refreshToken)) {
+            throw new IllegalArgumentException(getMessage("invalid.resfresh_token"));
+        }
+
+        TokenResponse tokenResponse = authService.reissue(refreshToken);
+
+        return ApiResponse.success(tokenResponse, getMessage("token.reissue.success"));
     }
 
 }

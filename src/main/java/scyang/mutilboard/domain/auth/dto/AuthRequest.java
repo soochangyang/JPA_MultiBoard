@@ -3,6 +3,7 @@ package scyang.mutilboard.domain.auth.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import scyang.mutilboard.domain.member.entity.Member;
@@ -37,6 +38,7 @@ public class AuthRequest {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class Login{
 
         @NotBlank(message = "required.email")

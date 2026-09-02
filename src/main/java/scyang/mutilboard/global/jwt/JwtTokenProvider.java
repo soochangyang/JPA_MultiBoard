@@ -108,4 +108,30 @@ public class JwtTokenProvider {
         long now = new Date().getTime();
         return expiration.getTime() - now;
     }
+
+    //Refresh Token (lifeCycle 7days)
+    public String createRefreshToken(String email){
+        Date now = new Date();
+        //7Days = 7 * 24 * 60 * 60 * 1000
+        long refreshExpirationTime = 604800000L;
+        Date validity = new Date(now.getTime() + refreshExpirationTime);
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+
+    //get Subject(email)
+    public String getEmailFromToken(String token){
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
 }
