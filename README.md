@@ -38,8 +38,4 @@ A test-driven mini project for a multi-board API built using Spring Boot and JPA
 ### 📅 [2026-08-28] - feature/env-setup
 - Profile Separation (`dev`, `stage`, `real`)
 - Internationalization (`i18n`) Message File Setup
-      
-
-
-- Implement full JPA Auditing (`@CreatedBy`, `@LastModifiedBy`) integrated with Spring Security's `SecurityContextHolder` via `AuditorAwareImpl`
-- Extract Auditing configuration into a dedicated `JpaAuditingConfig` class
+  
